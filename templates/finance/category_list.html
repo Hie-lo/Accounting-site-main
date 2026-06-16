@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت دسته‌بندی‌ها{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        دسته‌بندی‌های من
+        <button type="button" class="btn btn-sm btn-primary float-start" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+            + دسته جدید
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>نام دسته</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categories %}
+                    <tr>
+                        <td>{{ cat.name }} {% if cat.is_default %}<span class="badge bg-secondary">پیش‌فرض</span>{% endif %}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCategoryModal"
+                                    data-id="{{ cat.id }}"
+                                    data-name="{{ cat.name }}">
+                                ویرایش
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategoryModal"
+                                    data-id="{{ cat.id }}"
+                                    data-name="{{ cat.name }}">
+                                حذف
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">هیچ دسته‌ای وجود ندارد.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- مودال افزودن دسته -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_category' %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">افزودن دسته جدید</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="add_category_name" class="form-label">نام دسته</label>
+                        <input type="text" name="name" id="add_category_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ویرایش دسته -->
+<div class="modal fade" id="editCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="editCategoryForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">ویرایش دسته</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="category_id" id="edit_category_id">
+                    <div class="mb-3">
+                        <label for="edit_category_name" class="form-label">نام دسته</label>
+                        <input type="text" name="name" id="edit_category_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال حذف دسته -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="deleteCategoryForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">حذف دسته</h5>
+                </div>
+                <div class="modal-body">
+                    <p>آیا از حذف دسته <strong id="delete_category_name"></strong> مطمئن هستید؟</p>
+                    <input type="hidden" name="category_id" id="delete_category_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-danger">بله، حذف کن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // مودال ویرایش
+    const editModal = document.getElementById('editCategoryModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        document.getElementById('edit_category_id').value = id;
+        document.getElementById('edit_category_name').value = name;
+        document.getElementById('editCategoryForm').action = "{% url 'edit_category' 0 %}".replace('0', id);
+    });
+
+    // مودال حذف
+    const deleteModal = document.getElementById('deleteCategoryModal');
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        document.getElementById('delete_category_id').value = id;
+        document.getElementById('delete_category_name').innerText = name;
+        document.getElementById('deleteCategoryForm').action = "{% url 'delete_category' 0 %}".replace('0', id);
+    });
+</script>
+{% endblock %}

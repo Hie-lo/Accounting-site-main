@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}بودجه‌های ماهانه{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        بودجه‌های تعریف شده
+        <button type="button" class="btn btn-sm btn-primary float-start" data-bs-toggle="modal" data-bs-target="#budgetModal" onclick="resetBudgetForm()">
+            + بودجه جدید
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>دسته</th><th>ماه/سال</th><th>بودجه (تومان)</th><th>خرج شده (تومان)</th><th>درصد مصرف</th><th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for budget in budgets %}
+                    <tr>
+                        <td>{{ budget.category.name }}</td>
+                        <td>{{ budget.month_name }} {{ budget.year }}</td>
+                        <td>{{ budget.amount }}</td>
+                        <td>{{ budget.spent }}</td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar {% if budget.percent > 90 %}bg-danger{% elif budget.percent > 70 %}bg-warning{% else %}bg-success{% endif %}" 
+                                     role="progressbar" style="width: {{ budget.percent }}%;" 
+                                     aria-valuenow="{{ budget.percent }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ budget.percent|floatformat:0 }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#budgetModal" 
+                                    onclick="editBudget({{ budget.id }}, '{{ budget.category.id }}', '{{ budget.amount }}', {{ budget.month }}, {{ budget.year }})">
+                                ویرایش
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteBudgetModal"
+                                    data-id="{{ budget.id }}"
+                                    data-category="{{ budget.category.name }}"
+                                    data-month="{{ budget.month_name }}"
+                                    data-year="{{ budget.year }}">
+                                حذف
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">هیچ بودجه‌ای تعریف نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- مودال افزودن/ویرایش بودجه -->
+<div class="modal fade" id="budgetModal" tabindex="-1" aria-labelledby="budgetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-white">
+                <h5 class="modal-title" id="budgetModalLabel">افزودن بودجه جدید</h5>
+            </div>
+            <form method="post" id="budgetForm" action="{% url 'add_budget' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <input type="hidden" name="budget_id" id="budgetId" value="">
+                    <div class="mb-3">
+                        <label for="id_category" class="form-label">دسته‌بندی</label>
+                        <select name="category" id="id_category" class="form-select" required>
+                            <option value="">---------</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_amount" class="form-label">مبلغ بودجه (تومان)</label>
+                        <input type="number" name="amount" id="id_amount" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_month" class="form-label">ماه</label>
+                        <select name="month" class="form-select" required>
+                            {% for num, name in months %}
+                                <option value="{{ num }}" {% if current_month == num %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_year" class="form-label">سال</label>
+                        <input type="number" name="year" id="id_year" class="form-control" value="{{ current_year }}" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- مودال حذف بودجه -->
+<div class="modal fade" id="deleteBudgetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">حذف بودجه</h5>
+            </div>
+            <form method="post" id="deleteBudgetForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <p>آیا از حذف بودجه برای دسته <strong id="deleteCategoryName"></strong> در ماه <strong id="deleteMonthYear"></strong> مطمئن هستید؟</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-danger">بله، حذف کن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function resetBudgetForm() {
+        document.getElementById('budgetForm').action = "{% url 'add_budget' %}";
+        document.getElementById('budgetId').value = '';
+        document.getElementById('budgetModalLabel').innerText = 'افزودن بودجه جدید';
+        document.getElementById('budgetForm').reset();
+        // Clear hidden id
+    }
+
+    function editBudget(budgetId, categoryId, amount, month, year) {
+        document.getElementById('budgetForm').action = `/budgets/edit/${budgetId}/`;
+        document.getElementById('budgetId').value = budgetId;
+        document.getElementById('budgetModalLabel').innerText = 'ویرایش بودجه';
+        document.getElementById('id_category').value = categoryId;
+        document.getElementById('id_amount').value = amount;
+        document.getElementById('id_month').value = month;
+        document.getElementById('id_year').value = year;
+    }
+</script>
+{% endblock %}

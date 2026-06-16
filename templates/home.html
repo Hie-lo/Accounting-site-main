@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}صفحه اصلی{% endblock %}
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-lg-8 col-md-10 text-center">
+        <div class="card p-4 p-md-5 glass-card">
+            <div class="card-body">
+                <!-- لوگو یا آیکون -->
+                <div class="mb-4">
+                    <span class="display-1">💰</span>
+                </div>
+                
+                <h1 class="display-4 fw-bold text-gradient mb-3">
+                    به کیف پول مجازی خوش آمدید
+                </h1>
+                
+                <p class="lead text-muted mb-4">
+                    مدیریت دخل و خرج، بودجه‌بندی هوشمند و تحلیل مالی شخصی
+                </p>
+                
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-chart-pie"></i> ورود به داشبورد
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-secondary btn-lg px-5 py-3">
+                            <i class="fas fa-sign-out-alt"></i> خروج
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-sign-in-alt"></i> ورود
+                        </a>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-lg px-5 py-3">
+                            <i class="fas fa-user-plus"></i> ثبت‌نام
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ویژگی‌های سایت -->
+<div class="row mt-5 g-4">
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">📊</div>
+                <h5 class="card-title">گزارش‌گیری ماهانه</h5>
+                <p class="card-text text-muted">مشاهده دخل و خرج در بازه‌های زمانی مختلف</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">🎯</div>
+                <h5 class="card-title">بودجه‌بندی هوشمند</h5>
+                <p class="card-text text-muted">تعیین بودجه و هشدار نزدیک شدن به سقف</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">📈</div>
+                <h5 class="card-title">نمودارهای تحلیلی</h5>
+                <p class="card-text text-muted">نمایش گرافیکی وضعیت مالی شما</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

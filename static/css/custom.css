@@ -1,0 +1,469 @@
+/* متغیرهای تم روشن (پیش‌فرض) */
+:root {
+    --bg-color: #f0f2f5;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --card-border: rgba(255, 162, 162, 0.5);
+    --text-color: #1e2a3e;
+    --text-muted: #4a5568;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    --blur: blur(10px);
+    --transition: all 0.3s ease;
+}
+
+/* تم تاریک */
+[data-theme="dark"] {
+    --bg-color: #1a1a2e;
+    --card-bg: rgba(30, 30, 46, 0.8);
+    --card-border: rgba(255, 255, 255, 0.15);
+    --text-color: #e0e0e0;
+    --text-muted: #b0b0c0;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* اعمال به کل صفحه */
+body {
+    background: var(--bg-color) !important;
+    color: var(--text-color) !important;
+    transition: background 0.3s, color 0.3s;
+    font-family: 'Vazir', 'Tahoma', sans-serif;
+    min-height: 100vh;
+}
+
+/* کارت‌های شیشه‌ای (همان طراحی قبلی) */
+.card {
+    background: var(--card-bg) !important;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    border-radius: 20px !important;
+    box-shadow: var(--shadow);
+    color: var(--text-color) !important;
+}
+
+.card-header{
+    align-items: baseline;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+.table tbody tr:hover {
+    transform: translateX(-4px); /* یا translateY(-2px) بسته به سلیقه */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+/* کارت‌های رنگی (سبز، قرمز، آبی، خاکستری) متن سفید داشته باشند */
+.card.bg-success,
+.card.bg-danger,
+.card.bg-info,
+.card.bg-secondary {
+    background: rgba(0,0,0,0.85) !important; /* fallback */
+    color: white !important;
+}
+.card.bg-success .card-text,
+.card.bg-danger .card-text,
+.card.bg-info .card-text,
+.card.bg-secondary .card-text {
+    color: white !important;
+}
+/* اما حفظ رنگ اصلی آن کارت‌ها با استفاده از گرادیانت یا رنگ ثابت */
+.card.bg-success { background: linear-gradient(135deg, #2ecc71, #27ae60) !important; }
+.card.bg-danger { background: linear-gradient(135deg, #e74c3c, #c0392b) !important; }
+.card.bg-info { background: linear-gradient(135deg, #3498db, #2980b9) !important; }
+.card.bg-secondary { background: linear-gradient(135deg, #7f8c8d, #5d6d7e) !important; }
+
+/* دکمه‌ها با افکت شیشه‌ای و هاور */
+.btn {
+    border-radius: 40px !important;
+    padding: 8px 20px;
+    transition: var(--transition);
+    backdrop-filter: blur(5px);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    border: none;
+}
+.btn-primary:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #3a5bc7, #1a3a9a);
+}
+/* ========== استایل جدول ========== */
+.table {
+    background: var(--card-bg);
+    backdrop-filter: var(--blur);
+    border-radius: 16px;
+    overflow: hidden;
+    color: var(--text-color);
+}
+.table td, .table th {
+    background: transparent !important;
+    color: var(--text-color);
+    border-color: var(--card-border);
+}
+/* نوارهای متناوب (stripe) برای هر دو تم */
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+}
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+/* حذف افکت هاور اضافی */
+.table-hover > tbody > tr:hover > * {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+}
+[data-theme="dark"] .table-hover > tbody > tr:hover > * {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+}
+/* سربرگ جدول */
+.table thead th {
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom-width: 2px;
+    font-weight: 600;
+}
+[data-theme="dark"] .table thead th {
+    background: rgba(255, 255, 255, 0.08);
+}
+/* نوار منو شیشه‌ای */
+.navbar {
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.navbar .navbar-brand,
+.navbar .navbar-text,
+.navbar .nav-link {
+    color: white !important;
+}
+.navbar .btn-outline-light {
+    color: white;
+    margin: 0.2rem; 
+    border-color: rgba(255,255,255,0.5);
+}
+.navbar .btn-outline-light:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* انیمیشن fade-in */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* تنظیم فونت اعداد */
+.card .display-6, .card .h3 {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* ریسپانسیو */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    .display-6 {
+        font-size: 1.8rem;
+    }
+
+}
+
+/* رفع رنگ متن در فرم‌ها و لیبل‌ها */
+.form-label, label, .form-control, .form-select {
+    color: var(--text-color);
+}
+.form-control, .form-select {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+}
+.form-control:focus, .form-select:focus {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+.form-select{
+    border: 1px solid var(--card-border);
+}
+
+#expenseChartMonth {
+    justify-self: center;
+}
+
+/* وسط‌چین افقی و عمودی سلول‌های جدول */
+.table td,
+.table th {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.row {
+    align-items: center;
+}
+
+#themeToggle {
+    margin: 1rem;
+}
+
+#topupChartMonth{
+    justify-self: center;
+}
+
+.navbar-brand, .navbar-text {
+    margin: 1rem;
+}
+
+/* جلوگیری از رفتن متن خوش‌آمدگویی به خط بعد */
+.navbar > div:not(.container-fluid) {
+    display: inline-flex !important;
+    align-items: center;
+    margin-right: auto;
+    white-space: nowrap;
+}
+.navbar > div:not(.container-fluid) span {
+    white-space: nowrap;
+}
+
+/* در موبایل اگر فضا کم بود، اجازه دهد به خط بعد برود (اختیاری) */
+@media (max-width: 992px) {
+    .navbar > div:not(.container-fluid) {
+        white-space: normal;
+    }
+}
+
+/* استایل مودال برای نمایش توضیحات */
+.modal-body {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-height: 60vh;
+    overflow-y: auto;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.modal-title {
+    color: #1a1a2e;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+    .modal-body {
+        font-size: 0.85rem;
+    }
+}
+
+
+
+
+
+/* تنظیم حداقل عرض برای جدول در موبایل */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* کوچک کردن فونت دکمه‌ها در موبایل */
+@media (max-width: 767px) {
+    .table .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    .table td, .table th {
+        font-size: 0.75rem;
+        white-space: nowrap;  /* متن سر ستون‌ها در یک خط بماند */
+    }
+    /* ستون توضیحات حداقل عرض کم */
+    .table td:last-child, .table th:last-child {
+        min-width: 60px;
+    }
+    
+}
+
+/* برای موبایل‌های خیلی کوچک */
+@media (max-width: 576px) {
+    .table td, .table th {
+        font-size: 0.7rem;
+        padding: 0.3rem;
+    }
+}
+
+/* جلوگیری از شکستن نوار منو در رزولوشن‌های بین 768px تا 1200px */
+@media (min-width: 992px) and (max-width: 1200px) {
+    .btn-filter {
+        padding: 0.4rem;
+    }
+
+}
+
+@media (max-width: 992px) {
+    .btn-filter {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+    .card-text {
+        font-size: 0.9rem;
+    } 
+    .card-title{
+        font-size: 0.7rem;
+    }  
+
+}
+
+
+.welcome-theme{
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+/* بازگرداندن چیدمان افقی برای دکمه‌ها + خوش‌آمدگویی + تم در سایز بزرگ */
+@media (min-width: 992px) {
+    .navbar-collapse .ms-auto {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .navbar-collapse > div:not(.ms-auto) {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 0.5rem;
+    }
+    .card-text {
+        font-size: 1.25rem;
+    } 
+    .card-title{
+        font-size: 1.40rem;
+    }  
+}
+
+
+@media (max-width: 767px) {
+    .card-title {
+        font-size: 1.5rem;
+    }
+    .card-text{
+        font-size: 1.5rem;
+    }
+}
+
+
+
+.dashboard-stats-row {
+    align-items: stretch !important;
+}
+.dashboard-stats-row .card {
+    height: 100%;
+}
+
+    /* رفع مشکل هم‌ارتفاعی کارت‌های گزارش ماهانه */
+.stats-row {
+    align-items: stretch !important;
+}
+.stats-row .card {
+    height: 100%;
+}
+
+.exel-expoert-btn {
+    margin: 1rem;
+}
+
+
+.card {
+    backdrop-filter: blur(10px);
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px !important;
+    animation: fadeInUp 0.6s ease-out;
+}
+.form-control {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 0.75rem;
+}
+.form-control:focus {
+    background: var(--card-bg);
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.min-vh-75 {
+    min-height: 75vh;
+}
+
+.glass-card {
+    background: var(--card-bg) !important;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--card-border);
+    border-radius: 30px !important;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.glass-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+[data-theme="dark"] .text-gradient {
+    background: linear-gradient(135deg, #6c8cff, #4e73df);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.btn-lg {
+    border-radius: 50px !important;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-lg:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 25px rgba(78, 115, 223, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--text-color);
+    border-color: var(--card-border);
+}
+
+.btn-outline-primary:hover {
+    background: rgba(78, 115, 223, 0.1);
+    border-color: #4e73df;
+    color: #4e73df;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: #e0e0e0;
+    border-color: rgba(255,255,255,0.2);
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.card .display-4 {
+    font-size: 2.5rem;
+}
