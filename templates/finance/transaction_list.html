@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load filters %}
+{% block title %}لیست تراکنش‌ها{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        همه تراکنش‌ها
+        <button type="button" class="btn btn-sm btn-success float-start" data-bs-toggle="modal" data-bs-target="#addTransactionModal">
+            + جدید
+        </button>
+    </div>
+    <div class="card-body">
+        <!-- فرم فیلتر (بدون تغییر) -->
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-2">
+                <label>نوع</label>
+                <select name="type" class="form-select">
+                    <option value="">همه</option>
+                    <option value="topup" {% if type_filter == 'topup' %}selected{% endif %}>افزایش موجودی</option>
+                    <option value="expense" {% if type_filter == 'expense' %}selected{% endif %}>خرج</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>دسته</label>
+                <select name="category" class="form-select">
+                    <option value="">همه</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if category_id|stringformat:'s' == cat.id|stringformat:'s' %}selected{% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>از تاریخ</label>
+                <input type="date" name="from_date" class="form-control" value="{{ from_date|default:'' }}">
+            </div>
+            <div class="col-md-2">
+                <label>تا تاریخ</label>
+                <input type="date" name="to_date" class="form-control" value="{{ to_date|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <label>جستجو (توضیحات)</label>
+                <input type="text" name="search" class="form-control" placeholder="متن مورد نظر..." value="{{ search_text|default:'' }}">
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">فیلتر</button>
+            </div>
+        </form>
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="{% url 'export_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+                📎 خروجی اکسل (با فیلترهای جاری)
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>نوع</th><th>مبلغ</th><th>دسته</th><th>تاریخ</th><th>توضیحات</th><th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td>{% if t.type == 'topup' %}➕ افزایش{% else %}➖ خرج{% endif %}</td>
+                        <td>{{ t.amount|intcomma }} تومان</td>
+                        <td>{{ t.category.name|default:"بدون دسته" }}</td>
+                        <td>{{ t.date }}</td>
+                        <td>
+                            <span class="clickable-description" data-fulltext="{{ t.description }}" style="cursor: pointer;">
+                                {{ t.description|truncatechars:18 }}
+                            </span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editTransactionModal"
+                                    data-id="{{ t.id }}"
+                                    data-type="{{ t.type }}"
+                                    data-amount="{{ t.amount }}"
+                                    data-category="{{ t.category.id|default:'' }}"
+                                    data-date="{{ t.date|date:'Y-m-d' }}"
+                                    data-description="{{ t.description|escapejs }}">
+                                ویرایش
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteTransactionModal"
+                                    data-id="{{ t.id }}"
+                                    data-title="{{ t.title }}">
+                                حذف
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">هیچ تراکنشی با این فیلترها یافت نشد.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- مودال افزودن تراکنش جدید (همان قبلی) -->
+<div class="modal fade" id="addTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="{% url 'add_transaction' %}" id="addTransactionForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">تراکنش جدید</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">نوع</label>
+                        <select name="type" class="form-select" required>
+                            <option value="topup">افزایش موجودی</option>
+                            <option value="expense">خرج</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">مبلغ (تومان)</label>
+                        <input type="number" name="amount" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">دسته</label>
+                        <select name="category" class="form-select">
+                            <option value="">بدون دسته</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاریخ</label>
+                        <input type="date" name="date" class="form-control" id="transactionDate">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">توضیحات (اختیاری)</label>
+                        <textarea name="description" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ویرایش تراکنش -->
+<div class="modal fade" id="editTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="editTransactionForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">ویرایش تراکنش</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">نوع</label>
+                        <select name="type" id="edit_type" class="form-select" required>
+                            <option value="topup">افزایش موجودی</option>
+                            <option value="expense">خرج</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">مبلغ (تومان)</label>
+                        <input type="number" name="amount" id="edit_amount" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">دسته</label>
+                        <select name="category" id="edit_category" class="form-select">
+                            <option value="">بدون دسته</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاریخ</label>
+                        <input type="date" name="date" id="edit_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">توضیحات (اختیاری)</label>
+                        <textarea name="description" id="edit_description" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- مودال حذف تراکنش -->
+<div class="modal fade" id="deleteTransactionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" id="deleteTransactionForm">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">حذف تراکنش</h5>
+                </div>
+                <div class="modal-body">
+                    <p>آیا از حذف این تراکنش مطمئن هستید؟</p>
+                    <input type="hidden" name="transaction_id" id="delete_transaction_id">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
+                    <button type="submit" class="btn btn-danger">بله، حذف کن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // تنظیم تاریخ پیش‌فرض برای مودال افزودن
+    document.getElementById('transactionDate').value = new Date().toISOString().split('T')[0];
+
+    // مودال ویرایش: پر کردن فرم با داده‌های دکمه
+    const editModal = document.getElementById('editTransactionModal');
+    editModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        const type = button.getAttribute('data-type');
+        const amount = button.getAttribute('data-amount');
+        const category = button.getAttribute('data-category');
+        const date = button.getAttribute('data-date');
+        const description = button.getAttribute('data-description');
+
+        document.getElementById('edit_type').value = type;
+        document.getElementById('edit_amount').value = amount;
+        document.getElementById('edit_category').value = category;
+        document.getElementById('edit_date').value = date;
+        document.getElementById('edit_description').value = description;
+
+        // تنظیم action فرم به آدرس edit_transaction با id
+        const form = document.getElementById('editTransactionForm');
+        form.action = "{% url 'edit_transaction' 0 %}".replace('0', id);
+    });
+
+    // مودال حذف: تنظیم action و id
+    const deleteModal = document.getElementById('deleteTransactionModal');
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        document.getElementById('delete_transaction_id').value = id;
+        const form = document.getElementById('deleteTransactionForm');
+        form.action = "{% url 'delete_transaction' 0 %}".replace('0', id);
+    });
+</script>
+{% endblock %}

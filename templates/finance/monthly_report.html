@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load filters %}
+{% load static %}
+{% block title %}گزارش ماهانه{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        گزارش ماهانه
+    </div>
+    <div class="card-body">
+        <!-- فرم انتخاب ماه و سال - بدون دکنه، با auto-submit -->
+        <form method="get" id="reportForm" class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label>سال</label>
+                <select name="year" class="form-select" id="yearSelect">
+                    {% for y in years %}
+                        <option value="{{ y }}" {% if selected_year == y %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label>ماه</label>
+                <select name="month" class="form-select" id="monthSelect">
+                    {% for num, name in months %}
+                        <option value="{{ num }}" {% if selected_month == num %}selected{% endif %}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- کارت‌های خلاصه با ارتفاع یکسان و متن یکسان -->
+        <div class="row row-cols-1 row-cols-md-4 g-3 mb-4 stats-row">
+            <div class="col">
+                <div class="card text-white bg-success h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">مجموع افزایش موجودی</h6>
+                        <p class="card-text h3">{{ total_topup|intcomma }} تومان</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-danger h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">مجموع خرج‌ها</h6>
+                        <p class="card-text h3">{{ total_expense|intcomma }} تومان</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-info h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">موجودی ابتدای ماه</h6>
+                        <p class="card-text h3">{{ balance_before|intcomma }} تومان</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card text-white bg-secondary h-100">
+                    <div class="card-body">
+                        <h6 class="card-title">موجودی انتهای ماه</h6>
+                        <p class="card-text h3">{{ balance_end|intcomma }} تومان</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- نمودار خرج بر اساس دسته -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">نمودار خرج بر اساس دسته</div>
+                    <div class="card-body" style="height: 300px;">
+                        <canvas id="expenseChartMonth"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">نمودار افزایش موجودی بر اساس دسته</div>
+                    <div class="card-body" style="height: 300px;">
+                        <canvas id="topupChartMonth"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- لیست تراکنش‌های ماه -->
+        <div class="card">
+            <div class="card-header">تراکنش‌های ماه {{ selected_month_name }} {{ selected_year }}</div>
+
+            <div class="d-flex exel-expoert-btn justify-content-end mb-3">
+                <a href="{% url 'export_excel' %}?year={{ selected_year }}&month={{ selected_month }}" class="btn btn-success">
+                    📎 خروجی اکسل (این ماه)
+                </a>
+            </div>
+            </div>
+            
+            <div class="card-body" style="overflow-x: auto;">
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>تاریخ</th><th>نوع</th><th>مبلغ</th><th>دسته</th><th>توضیحات</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.date }} </td>
+                            <td>{% if t.type == 'topup' %}➕ افزایش{% else %}➖ خرج{% endif %}</td>
+                            <td>{{ t.amount|intcomma }} تومان</td>
+                            <td>{{ t.category.name|default:"بدون دسته" }}</td>
+                            <td>
+                                <span class="clickable-description" data-fulltext="{{ t.description }}" style="cursor: pointer;">
+                                    {{ t.description|truncatechars:18 }}
+                                </span>
+                            </td>
+                         </tr>
+                        {% empty %}
+                        <tr><td colspan="5">هیچ تراکنشی در این ماه وجود ندارد.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chart.umd.js' %}"></script>
+<script>
+    // نمودار
+    const labels = {{ chart_labels|safe }};
+    const dataValues = {{ chart_data|safe }};
+    const ctx = document.getElementById('expenseChartMonth').getContext('2d');
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'مبلغ (تومان)',
+                data: dataValues,
+                backgroundColor: ['#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c', '#007bff']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+    // نمودار دوم (افزایش موجودی)
+    const topupLabels = {{ chart_labels_topup|safe }};
+    const topupData = {{ chart_data_topup|safe }};
+    const ctxTopup = document.getElementById('topupChartMonth').getContext('2d');
+    new Chart(ctxTopup, {
+        type: 'pie',
+        data: {
+            labels: topupLabels,
+            datasets: [{
+                label: 'مبلغ (تومان)',
+                data: topupData,
+                backgroundColor: ['#28a745', '#dc3545', '#ffc107', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#e83e8c', '#007bff']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // auto-submit با تغییر سلکت‌ها
+    const yearSelect = document.getElementById('yearSelect');
+    const monthSelect = document.getElementById('monthSelect');
+    const reportForm = document.getElementById('reportForm');
+
+    function submitForm() {
+        reportForm.submit();
+    }
+
+    yearSelect.addEventListener('change', submitForm);
+    monthSelect.addEventListener('change', submitForm);
+</script>
+{% endblock %}

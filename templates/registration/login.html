@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ورود{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card animate__animated animate__fadeInUp">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">🔐 ورود به حساب</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>خطا!</strong> نام کاربری یا رمز عبور صحیح نیست.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">نام کاربری</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="نام کاربری خود را وارد کنید" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">رمز عبور</label>
+                        <input type="password" name="password" id="id_password" class="form-control" placeholder="رمز عبور خود را وارد کنید" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-sign-in-alt"></i> ورود
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">حساب ندارید؟  
+                        <a href="{% url 'signup' %}" class="text-primary fw-bold">ثبت‌نام کنید</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        backdrop-filter: blur(10px);
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 20px !important;
+        animation: fadeInUp 0.6s ease-out;
+    }
+    .form-control {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        padding: 0.75rem;
+    }
+    .form-control:focus {
+        background: var(--card-bg);
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+</style>
+{% endblock %}

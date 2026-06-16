@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}ثبت تراکنش جدید{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">ثبت تراکنش جدید</div>
+            <div class="card-body">
+                <form method="post" id="transactionForm">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">ذخیره</button>
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">بازگشت</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال خطا -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">خطا</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+                <!-- متن خطا اینجا قرار می‌گیرد -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('transactionForm').addEventListener('submit', function(event) {
+        const dateInput = document.querySelector('input[name="date"]');
+        let dateValue = dateInput.value;
+        if (!dateValue) {
+            // اگر خالی بود، خطا نده، ولی اجازه بده فرم برود (سمت سرور پر می‌کند)
+            return true;
+        }
+        const selectedDate = new Date(dateValue);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);  // مقایسه فقط تاریخ
+        if (selectedDate > today) {
+            event.preventDefault();
+            const errorModalBody = document.getElementById('errorModalBody');
+            errorModalBody.innerText = 'تاریخ وارد شده نمی‌تواند در آینده باشد. لطفاً تاریخ معتبر انتخاب کنید.';
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+    });
+</script>
+{% endblock %}

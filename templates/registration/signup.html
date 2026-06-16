@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ثبت‌نام{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card animate__animated animate__fadeInUp">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">✨ ایجاد حساب کاربری</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center justify-content-between" role="alert">
+                            <div>
+                                <strong>خطا!</strong> لطفاً خطاهای زیر را بررسی کنید:
+                                <ul class="mb-0 mt-2">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="position: relative; top: 0;"></button>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">نام کاربری</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="نام کاربری خود را وارد کنید" required>
+                        <small class="text-muted">الزامی. فقط حروف، اعداد و @/./+/-/_</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">ایمیل</label>
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="example@domain.com" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">رمز عبور</label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="رمز عبور خود را وارد کنید" required>
+                        <small class="text-muted">حداقل ۸ کاراکتر</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_password2" class="form-label">تکرار رمز عبور</label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="رمز عبور را دوباره وارد کنید" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        <i class="fas fa-user-plus"></i> ثبت‌نام
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">قبلاً حساب دارید؟  
+                        <a href="{% url 'login' %}" class="text-primary fw-bold">وارد شوید</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

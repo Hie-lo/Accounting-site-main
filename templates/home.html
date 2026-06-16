@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}صفحه اصلی{% endblock %}
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="alert alert-success">
+        خوش آمدید {{ user.username }}! به داشبورد خود بروید.
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary">ورود به داشبورد</a>
+    </div>
+{% else %}
+    <div class="text-center">
+        <h1 class="display-4">به کیف پول مجازی خوش آمدید</h1>
+        <p class="lead">لطفاً وارد شوید یا ثبت‌نام کنید.</p>
+        <a href="{% url 'login' %}" class="btn btn-success">ورود</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary">ثبت‌نام</a>
+    </div>
+{% endif %}
+{% endblock %}
