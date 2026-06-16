@@ -109,7 +109,11 @@
             modal.show();
         }
     });
-   
+   // اعمال تم تاریک به عنوان پیش‌فرض
+    if (!localStorage.getItem('theme')) {
+        localStorage.setItem('theme', 'dark');
+    }
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme'));
 </script>   
 </body>
 </html>
