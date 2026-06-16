@@ -467,3 +467,32 @@ body {
 .card .display-4 {
     font-size: 2.5rem;
 }
+/* ===== رفع رنگ متن در حالت تاریک برای صفحه Home ===== */
+
+/* تنظیم رنگ متن توضیحات اصلی */
+.home-wrapper .text-muted,
+.home-wrapper .lead.text-muted {
+    color: #d1d5db !important;  /* سفید مایل به خاکستری برای خوانایی بهتر */
+}
+
+/* تنظیم رنگ متن کارت‌های ویژگی‌ها (ویجت‌های پایین) */
+.home-wrapper .card-text.text-muted {
+    color: #cbd5e1 !important;  /* سفید نقره‌ای */
+}
+
+/* تنظیم رنگ عنوان کارت‌های ویژگی‌ها */
+.home-wrapper .card-title.fw-bold {
+    color: #f3f4f6 !important;  /* سفید روشن */
+}
+
+/* اطمینان از سفید بودن متن در حالت تاریک برای همه کارت‌های شیشه‌ای */
+[data-theme="dark"] .glass-card .card-text,
+[data-theme="dark"] .glass-card .lead,
+[data-theme="dark"] .glass-card .card-title {
+    color: #f3f4f6 !important;
+}
+
+/* تنظیم رنگ متن توضیحات کوچک در ویجت‌ها */
+[data-theme="dark"] .glass-card .small.text-muted {
+    color: #9ca3af !important;  /* خاکستری روشن برای خوانایی بهتر */
+}
