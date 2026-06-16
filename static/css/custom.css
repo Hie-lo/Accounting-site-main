@@ -496,3 +496,74 @@ body {
 [data-theme="dark"] .glass-card .small.text-muted {
     color: #9ca3af !important;  /* خاکستری روشن برای خوانایی بهتر */
 }
+/* ===== رفع دکمه ضربدر در پیام‌های هشدار ===== */
+.alert {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--blur);
+}
+
+.alert .btn-close {
+    position: relative;
+    top: 0;
+    right: 0;
+    margin-right: auto;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+.alert .btn-close:hover {
+    opacity: 1;
+}
+
+/* در حالت تاریک، دکمه ضربدر سفید باشد */
+[data-theme="dark"] .alert .btn-close {
+    filter: invert(1);
+}
+
+/* پیام موفقیت */
+.alert-success {
+    background: rgba(46, 204, 113, 0.15) !important;
+    border: 1px solid rgba(46, 204, 113, 0.3) !important;
+    color: #27ae60 !important;
+}
+
+/* پیام خطا */
+.alert-danger {
+    background: rgba(231, 76, 60, 0.15) !important;
+    border: 1px solid rgba(231, 76, 60, 0.3) !important;
+    color: #e74c3c !important;
+}
+
+/* پیام هشدار */
+.alert-warning {
+    background: rgba(241, 196, 15, 0.15) !important;
+    border: 1px solid rgba(241, 196, 15, 0.3) !important;
+    color: #f39c12 !important;
+}
+
+/* پیام اطلاعات */
+.alert-info {
+    background: rgba(52, 152, 219, 0.15) !important;
+    border: 1px solid rgba(52, 152, 219, 0.3) !important;
+    color: #2980b9 !important;
+}
+
+/* در حالت تاریک، رنگ متن پیام‌ها روشن شود */
+[data-theme="dark"] .alert-success {
+    color: #7ddfa3 !important;
+}
+[data-theme="dark"] .alert-danger {
+    color: #f1948a !important;
+}
+[data-theme="dark"] .alert-warning {
+    color: #f7dc6f !important;
+}
+[data-theme="dark"] .alert-info {
+    color: #85c1e9 !important;
+}
