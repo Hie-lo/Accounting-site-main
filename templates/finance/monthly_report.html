@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load filters %}
+{% load jalali_filters %}
 {% load static %}
 {% block title %}گزارش ماهانه{% endblock %}
 {% block content %}
@@ -97,12 +98,12 @@
             <div class="card-body" style="overflow-x: auto;">
                 <table class="table table-striped">
                     <thead>
-                        <tr><th>تاریخ</th><th>نوع</th><th>مبلغ</th><th>دسته</th><th>توضیحات</th></tr>
+                        <tr><th>تاریخ</th><th>نوع</th><th>مبلغ</th><th>دسته</th><th>توضیحات</th><th>ارزیابی</th></tr>
                     </thead>
                     <tbody>
                         {% for t in transactions %}
                         <tr>
-                            <td>{{ t.date }} </td>
+                            <td>{{ t.date }}</td>
                             <td>{% if t.type == 'topup' %}➕ افزایش{% else %}➖ خرج{% endif %}</td>
                             <td>{{ t.amount|intcomma }} تومان</td>
                             <td>{{ t.category.name|default:"بدون دسته" }}</td>
@@ -110,6 +111,23 @@
                                 <span class="clickable-description" data-fulltext="{{ t.description }}" style="cursor: pointer;">
                                     {{ t.description|truncatechars:18 }}
                                 </span>
+                            </td>
+                            <td>
+                                {% if t.rating == 'bad' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-thumbs-down"></i> بد
+                                    </span>
+                                {% elif t.rating == 'medium' %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-meh"></i> متوسط
+                                    </span>
+                                {% elif t.rating == 'good' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-thumbs-up"></i> خوب
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">—</span>
+                                {% endif %}
                             </td>
                          </tr>
                         {% empty %}

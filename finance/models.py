@@ -4,6 +4,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import Sum
 import datetime
+from django_jalali.db import models as jmodels 
+import jdatetime  
+
 class Wallet(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='wallet')
     balance = models.BigIntegerField(default=0)  # موجودی به تومان
@@ -27,16 +30,22 @@ class Transaction(models.Model):
         ('topup', 'افزایش موجودی'),
         ('expense', 'خرج'),
     ]
+    RATING_CHOICES = [
+        ('bad', '👎 بد'),
+        ('medium', '👍 متوسط'),
+        ('good', '🌟 خوب'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='transactions')
-    amount = models.PositiveIntegerField()  # مبلغ به تومان
+    amount = models.PositiveIntegerField()
     type = models.CharField(max_length=7, choices=TYPE_CHOICES)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    date = models.DateField(auto_now_add=False, default=datetime.date.today)
+    date = jmodels.jDateField(
+        auto_now_add=False,
+        default=jdatetime.date.today  # ✅ استفاده از jdatetime برای پیش‌فرض
+    )
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.get_type_display()} - {self.amount} تومان - {self.date}"
+    rating = models.CharField(max_length=6, choices=RATING_CHOICES, null=True, blank=True)  # اضافه شد
 
 class ManualBalanceHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='manual_balance_history')

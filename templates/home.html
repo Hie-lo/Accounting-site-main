@@ -1,19 +1,121 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}صفحه اصلی{% endblock %}
 {% block content %}
-{% if user.is_authenticated %}
-    <div class="alert alert-success">
-        خوش آمدید {{ user.username }}! به داشبورد خود بروید.
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-lg-8 col-md-10 text-center">
+        <div class="card p-4 p-md-5 glass-card">
+            <div class="card-body">
+                <div class="mb-4">
+                    <span class="display-1">💰</span>
+                </div>
+                
+                <h1 class="display-4 fw-bold text-gradient mb-3">
+                    به کیف پول مجازی خوش آمدید
+                </h1>
+                
+                <p class="lead text-muted mb-4">
+                    مدیریت دخل و خرج، بودجه‌بندی هوشمند و تحلیل مالی شخصی
+                </p>
+                
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-chart-pie"></i> ورود به داشبورد
+                        </a>
+                        <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-lg px-5 py-3">
+                                <i class="fas fa-sign-out-alt"></i> خروج
+                            </button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-5 py-3">
+                            <i class="fas fa-sign-in-alt"></i> ورود
+                        </a>
+                        <a href="{% url 'signup' %}" class="btn btn-outline-primary btn-lg px-5 py-3">
+                            <i class="fas fa-user-plus"></i> ثبت‌نام
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="text-center mt-4">
-        <a href="{% url 'dashboard' %}" class="btn btn-primary">ورود به داشبورد</a>
+</div>
+
+<!-- ویژگی‌های سایت -->
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">📊</div>
+                <h5 class="card-title">گزارش‌گیری ماهانه</h5>
+                <p class="card-text text-muted">مشاهده دخل و خرج در بازه‌های زمانی مختلف</p>
+            </div>
+        </div>
     </div>
-{% else %}
-    <div class="text-center">
-        <h1 class="display-4">به کیف پول مجازی خوش آمدید</h1>
-        <p class="lead">لطفاً وارد شوید یا ثبت‌نام کنید.</p>
-        <a href="{% url 'login' %}" class="btn btn-success">ورود</a>
-        <a href="{% url 'signup' %}" class="btn btn-primary">ثبت‌نام</a>
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">🎯</div>
+                <h5 class="card-title">دسترسی کامل</h5>
+                <p class="card-text text-muted">دسترسی کامل به تمامی تراکنش های ثبت شده</p>
+            </div>
+        </div>
     </div>
-{% endif %}
+    <div class="col-md-4">
+        <div class="card text-center h-100 glass-card">
+            <div class="card-body">
+                <div class="display-4 mb-3">📈</div>
+                <h5 class="card-title">نمودارهای تحلیلی</h5>
+                <p class="card-text text-muted">نمایش گرافیکی وضعیت مالی شما</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== استایل‌های دارک مود با بالاترین اولویت ===== -->
+<style>
+    /* تمام متن‌های صفحه Home در دارک مود */
+    [data-theme="dark"] .text-muted,
+    [data-theme="dark"] .card-text.text-muted,
+    [data-theme="dark"] .lead.text-muted,
+    [data-theme="dark"] .card-title,
+    [data-theme="dark"] .display-4,
+    [data-theme="dark"] .display-4.fw-bold,
+    [data-theme="dark"] .glass-card .card-text,
+    [data-theme="dark"] .glass-card .lead,
+    [data-theme="dark"] .glass-card .card-title,
+    [data-theme="dark"] .card-body .text-muted,
+    [data-theme="dark"] .card-body .lead {
+        color: #f3f4f6 !important;
+    }
+
+    /* عنوان گرادیانت در دارک مود */
+    [data-theme="dark"] .text-gradient {
+        background: linear-gradient(135deg, #6c8cff, #4e73df) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+    }
+
+    /* دکمه خروج در دارک مود */
+    [data-theme="dark"] .btn-outline-secondary {
+        color: #e0e0e0 !important;
+        border-color: rgba(255,255,255,0.2) !important;
+    }
+    [data-theme="dark"] .btn-outline-secondary:hover {
+        background: rgba(255,255,255,0.1) !important;
+    }
+
+    /* دکمه ثبت‌نام در دارک مود */
+    [data-theme="dark"] .btn-outline-primary {
+        color: #e0e0e0 !important;
+        border-color: rgba(255,255,255,0.2) !important;
+    }
+    [data-theme="dark"] .btn-outline-primary:hover {
+        background: rgba(78,115,223,0.2) !important;
+        color: #ffffff !important;
+    }
+</style>
 {% endblock %}

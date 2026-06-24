@@ -50,7 +50,14 @@
             <div class="card-body table-responsive">
                 <table class="table table-striped">
                     <thead>
-                        <tr><th>نوع</th><th>مبلغ</th><th>دسته</th><th>تاریخ</th><th>توضیحات</th></tr>
+                        <tr>
+                            <th>نوع</th>
+                            <th>مبلغ</th>
+                            <th>دسته</th>
+                            <th>تاریخ</th>
+                            <th>توضیحات</th>
+                            <th>ارزیابی</th>   <!-- 👈 اضافه شد -->
+                        </tr>
                     </thead>
                     <tbody>
                         {% for t in recent_transactions %}
@@ -64,9 +71,27 @@
                                     {{ t.description|truncatechars:18 }}
                                 </span>
                             </td>
+                            <!-- 👇 ستون ارزیابی (با رنگ‌بندی) -->
+                            <td>
+                                {% if t.rating == 'bad' %}
+                                    <span class="badge bg-danger">
+                                        <i class="fas fa-thumbs-down"></i> بد
+                                    </span>
+                                {% elif t.rating == 'medium' %}
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fas fa-meh"></i> متوسط
+                                    </span>
+                                {% elif t.rating == 'good' %}
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-thumbs-up"></i> خوب
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary">—</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% empty %}
-                        <tr><td colspan="5">هیچ تراکنشی ثبت نشده است.</td></tr>
+                        <tr><td colspan="6">هیچ تراکنشی ثبت نشده است.</td></tr>  <!-- تعداد ستون‌ها ۶ شد -->
                         {% endfor %}
                     </tbody>
                 </table>
@@ -91,6 +116,7 @@
         ثبت تراکنش جدید
     </button>
 </div>
+
 <!-- مودال افزودن تراکنش -->
 <div class="modal fade" id="addTransactionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -121,13 +147,34 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <!-- قسمت تاریخ در مودال -->
                     <div class="mb-3">
-                        <label class="form-label">تاریخ</label>
-                        <input type="date" name="date" class="form-control" id="transactionDate" value="{{ today|default:'' }}">
+                        <label class="form-label">تاریخ (شمسی)</label>
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <input type="number" name="jalali_year" class="form-control" placeholder="سال" value="{{ jalali_year|default:'' }}" min="1300" max="1500" required>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="jalali_month" class="form-control" placeholder="ماه" value="{{ jalali_month|default:'' }}" min="1" max="12" required>
+                            </div>
+                            <div class="col-4">
+                                <input type="number" name="jalali_day" class="form-control" placeholder="روز" value="{{ jalali_day|default:'' }}" min="1" max="31" required>
+                            </div>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">توضیحات (اختیاری)</label>
                         <textarea name="description" class="form-control" rows="2"></textarea>
+                    </div>
+                    <!-- 👇 فیلد ارزیابی اضافه شد -->
+                    <div class="mb-3">
+                        <label class="form-label">ارزیابی</label>
+                        <select name="rating" class="form-select">
+                            <option value="">انتخاب کنید...</option>
+                            <option value="bad">👎 بد</option>
+                            <option value="medium">👍 متوسط</option>
+                            <option value="good">🌟 خوب</option>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -138,7 +185,6 @@
         </div>
     </div>
 </div>
-
 
 {% endblock %}
 

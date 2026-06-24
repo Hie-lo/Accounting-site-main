@@ -11,7 +11,7 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped budget-table">
                 <thead>
                     <tr>
                         <th>دسته</th><th>ماه/سال</th><th>بودجه (تومان)</th><th>خرج شده (تومان)</th><th>درصد مصرف</th><th>عملیات</th>
@@ -101,6 +101,7 @@
         </div>
     </div>
 </div>
+
 <!-- مودال حذف بودجه -->
 <div class="modal fade" id="deleteBudgetModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -121,13 +122,13 @@
         </div>
     </div>
 </div>
+
 <script>
     function resetBudgetForm() {
         document.getElementById('budgetForm').action = "{% url 'add_budget' %}";
         document.getElementById('budgetId').value = '';
         document.getElementById('budgetModalLabel').innerText = 'افزودن بودجه جدید';
         document.getElementById('budgetForm').reset();
-        // Clear hidden id
     }
 
     function editBudget(budgetId, categoryId, amount, month, year) {
@@ -138,6 +139,24 @@
         document.getElementById('id_amount').value = amount;
         document.getElementById('id_month').value = month;
         document.getElementById('id_year').value = year;
+    }
+
+    // ===== مودال حذف بودجه =====
+    const deleteBudgetModal = document.getElementById('deleteBudgetModal');
+    if (deleteBudgetModal) {
+        deleteBudgetModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute('data-id');
+            const category = button.getAttribute('data-category');
+            const month = button.getAttribute('data-month');
+            const year = button.getAttribute('data-year');
+            
+            document.getElementById('deleteCategoryName').innerText = category;
+            document.getElementById('deleteMonthYear').innerText = month + ' ' + year;
+            
+            const form = document.getElementById('deleteBudgetForm');
+            form.action = `/budgets/delete/${id}/`;
+        });
     }
 </script>
 {% endblock %}
