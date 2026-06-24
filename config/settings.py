@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wkp9&y!^2@e0^eh6c+hqx0lc=x^vdc-uyp^tl@v2l(wf=p$w7y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['Hielo.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['Hielo.pythonanywhere.com']
 
 
 # Application definition
@@ -119,6 +119,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
+STATIC_ROOT = BASE_DIR / 'staticfiles' 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
